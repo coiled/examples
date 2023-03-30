@@ -1,0 +1,12 @@
+name: coiled
+channels:
+  - conda-forge
+dependencies:
+  - python==3.10
+  - dask
+  - coiled
+  - pyarrow
+  - s3fs
+  - matplotlib
+  - ipykernel
+  - dask-labextension
