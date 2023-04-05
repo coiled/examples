@@ -1,0 +1,15 @@
+name: datashader-demo
+channels:
+  - conda-forge
+dependencies:
+  - python==3.10
+  - dask
+  - coiled
+  - pyarrow
+  - ipykernel
+  - dask-labextension==6.1.0
+  - jupyterlab
+  - s3fs
+  - datashader
+  - holoviews
+  - hvplot
