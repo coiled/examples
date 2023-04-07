@@ -1,4 +1,4 @@
-name: datashader-demo
+name: datashader
 channels:
   - conda-forge
 dependencies:
@@ -7,8 +7,6 @@ dependencies:
   - coiled
   - pyarrow
   - ipykernel
-  - dask-labextension==6.1.0
-  - jupyterlab
   - s3fs
   - datashader
   - holoviews
