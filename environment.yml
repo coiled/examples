@@ -14,6 +14,9 @@ dependencies:
   - xgboost
   - pandas=2
   - optuna
+  - xarray
+  - geogif
+  - zarr
   - pip
   - pip:
     - git+https://github.com/mrocklin/optuna@dask-client
