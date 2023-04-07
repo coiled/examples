@@ -4,6 +4,7 @@ channels:
 dependencies:
   - python==3.10
   - dask
+  - dask-ml
   - coiled
   - pyarrow
   - s3fs
@@ -13,3 +14,7 @@ dependencies:
   - xgboost
   - pandas=2
   - optuna
+  - pip
+  - pip:
+    - git+https://github.com/mrocklin/optuna@dask-client
+
