@@ -10,3 +10,6 @@ dependencies:
   - matplotlib
   - ipykernel
   - dask-labextension
+  - xgboost
+  - pandas=2
+  - optuna
