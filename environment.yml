@@ -18,6 +18,6 @@ dependencies:
   - zarr
   - pip
   - pip:
-    - pandas==2
+    - pandas==2 # until https://github.com/pydata/xarray/issues/7716 is fixed.
     - git+https://github.com/mrocklin/optuna@dask-client
 
