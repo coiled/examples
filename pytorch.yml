@@ -1,0 +1,14 @@
+name: pytorch
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python==3.10
+  - dask==2023.2
+  - coiled
+  - ipykernel
+  - optuna
+  - pytorch
+  - torchvision
+  - pynvml
