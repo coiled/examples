@@ -12,12 +12,12 @@ dependencies:
   - ipykernel
   - dask-labextension
   - xgboost
-  - pandas=2
   - optuna
   - xarray
   - geogif
   - zarr
   - pip
   - pip:
+    - pandas==2
     - git+https://github.com/mrocklin/optuna@dask-client
 
