@@ -1,6 +1,7 @@
 name: coiled
 channels:
   - conda-forge
+  - defaults
 dependencies:
   - python==3.10
   - dask
@@ -19,5 +20,5 @@ dependencies:
   - zarr
   - pip
   - pip:
-    - git+https://github.com/mrocklin/optuna@dask-client
+    - git+https://github.com/optuna/optuna
 
