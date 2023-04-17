@@ -12,3 +12,4 @@ dependencies:
   - holoviews
   - hvplot
   - jupyterlab
+  - dask-labextension
