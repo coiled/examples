@@ -1,0 +1,40 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/miniconda
+{
+	"name": "Miniconda (Python 3)",
+	"containerEnv": {
+		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}",
+		"CONTAINER_WORKSPACE_FOLDER": "${containerWorkspaceFolder}",
+	},
+	"build": {
+		"context": "..",
+		"dockerfile": "dev.Dockerfile",
+		"args": {
+			"CONTAINER_WORKSPACE_FOLDER": "${containerWorkspaceFolder}",
+		}
+	},
+	"overrideCommand": false,
+	"customizations": {
+		"vscode": {
+			"extension": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-python.black",
+				"ms-python.isort",
+				"ms-toolsai.jupyter",
+				"charliermarsh.ruff"
+			]
+		}
+	},
+	"remoteUser": "mambauser",
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "python --version",
+	// Configure tool-specific properties.
+	// "customizations": {},
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}
