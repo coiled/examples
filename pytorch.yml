@@ -4,11 +4,12 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python==3.10
-  - dask==2023.2.0
+  - python==3.11
+  - dask==2023.5.1
   - coiled
   - ipykernel
   - optuna
   - pytorch
   - torchvision
   - pynvml
+  - matplotlib
