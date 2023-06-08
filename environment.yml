@@ -18,7 +18,3 @@ dependencies:
   - xarray
   - geogif
   - zarr
-  - pip
-  - pip:
-    - git+https://github.com/optuna/optuna
-
