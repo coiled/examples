@@ -23,7 +23,6 @@ coiled.create_software_environment(
     vm_type="g5.xlarge",  # A GPU Instance Type
     software="pytorch",   # Our software environment defined above
     region="us-west-2",   # We find GPUs are easier to get here
-    compute_purchase_option="spot_with_fallback",  # Use spot if available
 )
 def f():
     import torch
