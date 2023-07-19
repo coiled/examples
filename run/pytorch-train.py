@@ -137,12 +137,12 @@ def train_all_epochs():
         avg_vloss = running_vloss / (i + 1)
         print('LOSS train {} valid {}'.format(avg_loss, avg_vloss))
 
-        # Track best performance, and save the model's state
+        # Return the best model
         if avg_vloss < best_vloss:
-            return model
-            # best_vloss = avg_vloss
-            # model_path = f'model_{epoch}'
-            # torch.save(model.state_dict(), model_path)
+            best_vloss = avg_vloss
+            best_model = model
+        
+        return best_model
 
 model = train_all_epochs()
 
