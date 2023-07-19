@@ -1,3 +1,8 @@
+"""
+This example was adapted from the following PyTorch tutorial
+https://pytorch.org/tutorials/beginner/introyt/trainingyt.html
+"""
+
 import os
 import sys
 import dask
