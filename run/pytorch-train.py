@@ -20,6 +20,7 @@ coiled.create_software_environment(
             "pytorch",
             "cudatoolkit",
             "pynvml",
+            "torchvision",
         ],
     },
     gpu_enabled=True,
@@ -145,7 +146,10 @@ def train_all_epochs():
 
 model = train_all_epochs()
 
-# Load 
+# Save model locally
+torch.save(model.state_dict(), "model.pt")
+
+# Load model back to your machine for more training, inference, or analysis
 # device = torch.device('cpu')
 # saved_model = GarmentClassifier()
-# saved_model.load_state_dict(torch.load('model_3', map_location=device))
+# saved_model.load_state_dict(torch.load('model.pt', map_location=device))
