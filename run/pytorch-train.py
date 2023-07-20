@@ -72,7 +72,7 @@ class GarmentClassifier(nn.Module):
         return x
 
 
-def train_one_epoch(model, loss_fn, optimizer, training_loader):
+def train_one_epoch(model, loss_fn, optimizer, training_loader, device):
     running_loss = 0.
     last_loss = 0.
 
@@ -82,6 +82,9 @@ def train_one_epoch(model, loss_fn, optimizer, training_loader):
     for i, data in enumerate(training_loader):
         # Every data instance is an input + label pair
         inputs, labels = data
+
+        # Move to GPU
+        inputs, labels = inputs.to(device), labels.to(device)
 
         # Zero your gradients for every batch!
         optimizer.zero_grad()
@@ -111,8 +114,22 @@ def train_one_epoch(model, loss_fn, optimizer, training_loader):
     region="us-west-2",   # We find GPUs are easier to get here
 )
 def train_all_epochs():
+    #  Confirm that GPU shows up
+    print(
+        "Available GPU is "
+        f"{torch.cuda.get_device_name(torch.cuda.current_device()) if torch.cuda.is_available() else '<none>'}"
+    )
+    device = (
+        "cuda"
+        if torch.cuda.is_available()
+        else "mps"
+        if torch.backends.mps.is_available()
+        else "cpu"
+    )
+    print(f"Using {device} device")
+
     training_loader, validation_loader = load_data()
-    model = GarmentClassifier()
+    model = GarmentClassifier().to(device)
     loss_fn = nn.CrossEntropyLoss()
     optimizer = SGD(model.parameters(), lr=0.001, momentum=0.9)
 
@@ -124,7 +141,7 @@ def train_all_epochs():
 
         # Make sure gradient tracking is on, and do a pass over the data
         model.train(True)
-        avg_loss = train_one_epoch(model, loss_fn, optimizer, training_loader)
+        avg_loss = train_one_epoch(model, loss_fn, optimizer, training_loader, device)
 
         running_vloss = 0.0
         # Set the model to evaluation mode, disabling dropout and using population
@@ -135,6 +152,10 @@ def train_all_epochs():
         with torch.no_grad():
             for i, vdata in enumerate(validation_loader):
                 vinputs, vlabels = vdata
+
+                # Move to GPU
+                vinputs, vlabels = vinputs.to(device), vlabels.to(device)
+
                 voutputs = model(vinputs)
                 vloss = loss_fn(voutputs, vlabels)
                 running_vloss += vloss
@@ -146,7 +167,12 @@ def train_all_epochs():
         if avg_vloss < best_vloss:
             best_vloss = avg_vloss
             best_model = model
-        
+
+        print(f"Model on CUDA device: {next(best_model.parameters()).is_cuda}")
+
+        # Move model to CPU so it can be serialized and returned to local machine
+        best_model = best_model.to("cpu")
+
         return best_model
 
 model = train_all_epochs()
