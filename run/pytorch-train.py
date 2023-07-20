@@ -137,7 +137,7 @@ def train_all_epochs():
     best_vloss = 1_000_000.
 
     for epoch in range(epochs):
-        print('EPOCH {}:'.format(epoch + 1))
+        print(f'EPOCH {epoch + 1}:')
 
         # Make sure gradient tracking is on, and do a pass over the data
         model.train(True)
@@ -168,12 +168,12 @@ def train_all_epochs():
             best_vloss = avg_vloss
             best_model = model
 
-        print(f"Model on CUDA device: {next(best_model.parameters()).is_cuda}")
+    print(f"Model on CUDA device: {next(best_model.parameters()).is_cuda}")
 
-        # Move model to CPU so it can be serialized and returned to local machine
-        best_model = best_model.to("cpu")
+    # Move model to CPU so it can be serialized and returned to local machine
+    best_model = best_model.to("cpu")
 
-        return best_model
+    return best_model
 
 model = train_all_epochs()
 
