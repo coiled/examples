@@ -1,3 +1,8 @@
+"""
+This example was adapted from the following PyTorch tutorial
+https://pytorch.org/tutorials/beginner/examples_autograd/two_layer_net_custom_function.html
+"""
+
 import coiled
 import sys
 import dask
