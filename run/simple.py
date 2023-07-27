@@ -1,12 +1,10 @@
 import coiled
 import pandas as pd
 
-df = pd.read_csv("run/data.csv")
+df = pd.read_csv("data.csv")
 
 @coiled.run(
     region="us-west-1",
-    cpu=32,
-    keepalive="10 minutes",
 )
 def process(df):
     df["z"] = df.x + df.y
