@@ -1,11 +1,18 @@
 """
 This example was adapted from the following PyTorch tutorial
-https://pytorch.org/tutorials/beginner/examples_autograd/two_layer_net_custom_function.html
+https://pytorch.org/tutorials/beginner/introyt/trainingyt.html
 """
 
-import coiled
+import os
 import sys
 import dask
+import coiled
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.optim import SGD
+from torchvision import datasets, transforms
+
 
 coiled.create_software_environment(
     name="pytorch",
@@ -18,102 +25,162 @@ coiled.create_software_environment(
             "pytorch",
             "cudatoolkit",
             "pynvml",
+            "torchvision",
         ],
     },
     gpu_enabled=True,
 )
 
 
+def load_data():
+    transform = transforms.Compose(
+        [transforms.ToTensor(),
+        transforms.Normalize((0.5,), (0.5,))])
+
+    # Create datasets for training & validation, download if necessary
+    training_set = datasets.FashionMNIST(os.getcwd(), train=True, transform=transform, download=True)
+    validation_set = datasets.FashionMNIST(os.getcwd(), train=False, transform=transform, download=True)
+
+    # Create data loaders for our datasets; shuffle for training, not for validation
+    training_loader = torch.utils.data.DataLoader(training_set, batch_size=4, shuffle=True)
+    validation_loader = torch.utils.data.DataLoader(validation_set, batch_size=4, shuffle=False)
+
+    # Report split sizes
+    print('Training set has {} instances'.format(len(training_set)))
+    print('Validation set has {} instances'.format(len(validation_set)))
+
+    return training_loader, validation_loader
+
+
+class GarmentClassifier(nn.Module):
+    def __init__(self):
+        super(GarmentClassifier, self).__init__()
+        self.conv1 = nn.Conv2d(1, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 4 * 4, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 10)
+
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = x.view(-1, 16 * 4 * 4)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+
+def train_one_epoch(model, loss_fn, optimizer, training_loader, device):
+    running_loss = 0.
+    last_loss = 0.
+
+    # Here, we use enumerate(training_loader) instead of
+    # iter(training_loader) so that we can track the batch
+    # index and do some intra-epoch reporting
+    for i, data in enumerate(training_loader):
+        # Every data instance is an input + label pair
+        inputs, labels = data
+
+        # Move to GPU
+        inputs, labels = inputs.to(device), labels.to(device)
+
+        # Zero your gradients for every batch!
+        optimizer.zero_grad()
+
+        # Make predictions for this batch
+        outputs = model(inputs)
+
+        # Compute the loss and its gradients
+        loss = loss_fn(outputs, labels)
+        loss.backward()
+
+        # Adjust learning weights
+        optimizer.step()
+
+        # Gather data
+        running_loss += loss.item()
+        if i % 1000 == 999:
+            last_loss = running_loss / 1000 # loss per batch
+            print('  batch {} loss: {}'.format(i + 1, last_loss))
+            running_loss = 0.
+
+    return last_loss
+
 @coiled.run(
     vm_type="g5.xlarge",  # A GPU Instance Type
     software="pytorch",   # Our software environment defined above
     region="us-west-2",   # We find GPUs are easier to get here
 )
-def f():
-    import torch
-    import math
+def train_all_epochs():
+    #  Confirm that GPU shows up
+    print(
+        "Available GPU is "
+        f"{torch.cuda.get_device_name(torch.cuda.current_device()) if torch.cuda.is_available() else '<none>'}"
+    )
+    device = (
+        "cuda"
+        if torch.cuda.is_available()
+        else "mps"
+        if torch.backends.mps.is_available()
+        else "cpu"
+    )
+    print(f"Using {device} device")
 
-    class LegendrePolynomial3(torch.autograd.Function):
-        """
-        We can implement our own custom autograd Functions by subclassing
-        torch.autograd.Function and implementing the forward and backward passes
-        which operate on Tensors.
-        """
+    training_loader, validation_loader = load_data()
+    model = GarmentClassifier().to(device)
+    loss_fn = nn.CrossEntropyLoss()
+    optimizer = SGD(model.parameters(), lr=0.001, momentum=0.9)
 
-        @staticmethod
-        def forward(ctx, input):
-            """
-            In the forward pass we receive a Tensor containing the input and return
-            a Tensor containing the output. ctx is a context object that can be used
-            to stash information for backward computation. You can cache arbitrary
-            objects for use in the backward pass using the ctx.save_for_backward method.
-            """
-            ctx.save_for_backward(input)
-            return 0.5 * (5 * input ** 3 - 3 * input)
+    epochs = 5
+    best_vloss = 1_000_000.
 
-        @staticmethod
-        def backward(ctx, grad_output):
-            """
-            In the backward pass we receive a Tensor containing the gradient of the loss
-            with respect to the output, and we need to compute the gradient of the loss
-            with respect to the input.
-            """
-            input, = ctx.saved_tensors
-            return grad_output * 1.5 * (5 * input ** 2 - 1)
+    for epoch in range(epochs):
+        print(f'EPOCH {epoch + 1}:')
 
+        # Make sure gradient tracking is on, and do a pass over the data
+        model.train(True)
+        avg_loss = train_one_epoch(model, loss_fn, optimizer, training_loader, device)
 
-    dtype = torch.float
-    device = torch.device("cpu")
-    device = torch.device("cuda:0")  # Uncomment this to run on GPU
+        running_vloss = 0.0
+        # Set the model to evaluation mode, disabling dropout and using population
+        # statistics for batch normalization.
+        model.eval()
 
-    # Create Tensors to hold input and outputs.
-    # By default, requires_grad=False, which indicates that we do not need to
-    # compute gradients with respect to these Tensors during the backward pass.
-    x = torch.linspace(-math.pi, math.pi, 2000, device=device, dtype=dtype)
-    y = torch.sin(x)
-
-    # Create random Tensors for weights. For this example, we need
-    # 4 weights: y = a + b * P3(c + d * x), these weights need to be initialized
-    # not too far from the correct result to ensure convergence.
-    # Setting requires_grad=True indicates that we want to compute gradients with
-    # respect to these Tensors during the backward pass.
-    a = torch.full((), 0.0, device=device, dtype=dtype, requires_grad=True)
-    b = torch.full((), -1.0, device=device, dtype=dtype, requires_grad=True)
-    c = torch.full((), 0.0, device=device, dtype=dtype, requires_grad=True)
-    d = torch.full((), 0.3, device=device, dtype=dtype, requires_grad=True)
-
-    learning_rate = 5e-6
-    for t in range(2000):
-        # To apply our Function, we use Function.apply method. We alias this as 'P3'.
-        P3 = LegendrePolynomial3.apply
-
-        # Forward pass: compute predicted y using operations; we compute
-        # P3 using our custom autograd operation.
-        y_pred = a + b * P3(c + d * x)
-
-        # Compute and print loss
-        loss = (y_pred - y).pow(2).sum()
-        if t % 100 == 99:
-            print(t, loss.item())
-
-        # Use autograd to compute the backward pass.
-        loss.backward()
-
-        # Update weights using gradient descent
+        # Disable gradient computation and reduce memory consumption.
         with torch.no_grad():
-            a -= learning_rate * a.grad
-            b -= learning_rate * b.grad
-            c -= learning_rate * c.grad
-            d -= learning_rate * d.grad
+            for i, vdata in enumerate(validation_loader):
+                vinputs, vlabels = vdata
 
-            # Manually zero the gradients after updating weights
-            a.grad = None
-            b.grad = None
-            c.grad = None
-            d.grad = None
+                # Move to GPU
+                vinputs, vlabels = vinputs.to(device), vlabels.to(device)
 
-    return f'Result: y = {a.item()} + {b.item()} * P3({c.item()} + {d.item()} x)'
+                voutputs = model(vinputs)
+                vloss = loss_fn(voutputs, vlabels)
+                running_vloss += vloss
 
-print(f())
+        avg_vloss = running_vloss / (i + 1)
+        print('LOSS train {} valid {}'.format(avg_loss, avg_vloss))
 
-f.cluster.shutdown()
+        # Return the best model
+        if avg_vloss < best_vloss:
+            best_vloss = avg_vloss
+            best_model = model
+
+    print(f"Model on CUDA device: {next(best_model.parameters()).is_cuda}")
+
+    # Move model to CPU so it can be serialized and returned to local machine
+    best_model = best_model.to("cpu")
+
+    return best_model
+
+model = train_all_epochs()
+
+# Save model locally
+torch.save(model.state_dict(), "model.pt")
+
+# Load model back to your machine for more training, inference, or analysis
+# device = torch.device('cpu')
+# saved_model = GarmentClassifier()
+# saved_model.load_state_dict(torch.load('model.pt', map_location=device))
