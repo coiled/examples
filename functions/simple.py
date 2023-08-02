@@ -3,7 +3,7 @@ import pandas as pd
 
 df = pd.read_csv("data.csv")
 
-@coiled.run(
+@coiled.function(
     region="us-west-1",
 )
 def process(df):

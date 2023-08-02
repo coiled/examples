@@ -11,7 +11,7 @@ filenames = [
     if "yellow_tripdata_2022" in fn
 ]
 
-@coiled.run(
+@coiled.function(
     region="us-east-1",
     memory="8 GiB",
 )
