@@ -18,3 +18,6 @@ dependencies:
   - xarray
   - geogif
   - zarr
+  - h5netcdf
+  - pip:
+    - git+https://github.com/jrbourbeau/earthaccess.git@include-store
