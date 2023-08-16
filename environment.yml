@@ -18,3 +18,4 @@ dependencies:
   - xarray
   - geogif
   - zarr
+  - pre-commit
