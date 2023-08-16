@@ -19,5 +19,6 @@ dependencies:
   - geogif
   - zarr
   - h5netcdf
+  - pre-commit
   - pip:
     - git+https://github.com/jrbourbeau/earthaccess.git@include-store
