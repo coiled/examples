@@ -1,0 +1,20 @@
+name: nwm
+channels:
+  - conda-forge
+  - pyviz
+dependencies:
+  - python=3.11
+  - xarray
+  - dask
+  - flox
+  - watermark
+  - rioxarray
+  - coiled
+  - ipykernel
+  - zarr
+  - s3fs
+  - hvplot
+  - geopandas
+  - geoviews
+  - jupyterlab
+  - dask-labextension
