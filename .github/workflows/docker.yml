@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      # FIXME: Remove this branch before merging
+      - gpu-docker
   pull_request:
 
 jobs:
@@ -25,6 +27,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          push: ${{ github.repository == 'coiled/examples' && github.event_name == 'push'  && github.ref == 'refs/heads/main'}}
+          # push: ${{ github.repository == 'coiled/examples' && github.event_name == 'push'  && github.ref == 'refs/heads/main'}}
+          # FIXME: Only push to dockerhub on pushes to `main`
+          push: ${{ github.repository == 'coiled/examples' && github.event_name == 'push' }}
           platforms: linux/amd64
           tags: coiled/gpu:latest
