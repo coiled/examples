@@ -6,7 +6,15 @@ on:
       - main
       # FIXME: Remove this branch before merging
       - gpu-docker
+    # This workflow takes a while, let's only run it when we touch relevant files
+    paths:
+      - pytorch.yml
+      - .github/workflows/docker.yml
   pull_request:
+    # This workflow takes a while, let's only run it when we touch relevant files
+    paths:
+      - pytorch.yml
+      - .github/workflows/docker.yml
 
 jobs:
   docker:
@@ -31,4 +39,4 @@ jobs:
           # FIXME: Only push to dockerhub on pushes to `main`
           push: ${{ github.repository == 'coiled/examples' && github.event_name == 'push' }}
           platforms: linux/amd64
-          tags: coiled/gpu:latest
+          tags: coiled/gpu:latest,coiled/gpu:${{ github.sha }}
