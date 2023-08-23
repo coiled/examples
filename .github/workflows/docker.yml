@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - gpu-docker
   pull_request:
 
 jobs:
@@ -26,6 +25,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          push: ${{ github.repository == 'coiled/examples' && github.event_name == 'push' }}
+          push: ${{ github.repository == 'coiled/examples' && github.event_name == 'push'  && github.ref == 'refs/heads/main'}}
           platforms: linux/amd64
           tags: coiled/gpu:latest
