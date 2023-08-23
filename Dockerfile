@@ -9,17 +9,7 @@ ARG PYTHON_VER
 COPY pytorch.yml pytorch.yml
 RUN mamba env update -n base --file pytorch.yml \
     && mamba install -y -n base -c pytorch -c nvidia -c conda-forge \
-        # "python=${PYTHON_VER}.*" \
         "cudatoolkit=${CUDA_VER%.*}.*" \
         "cuda-version=${CUDA_VER%.*}.*" \
-        # pynvml \
-        # pytorch \
         "pytorch-cuda=${CUDA_VER%.*}.*" \
-        # torchvision \
-        # ipython \
-        # dask \
-        # dask-labextension \
-        # jupyterlab \
-        # optuna \ 
-        # coiled \
     && conda clean -afy
