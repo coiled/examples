@@ -8,8 +8,10 @@ ARG PYTHON_VER
 
 COPY pytorch.yml pytorch.yml
 RUN mamba env update -n base --file pytorch.yml \
+    && mamba uninstall -y pytorch \
     && mamba install -y -n base -c pytorch -c nvidia -c conda-forge \
         "cudatoolkit=${CUDA_VER%.*}.*" \
         "cuda-version=${CUDA_VER%.*}.*" \
+        pytorch \
         "pytorch-cuda=${CUDA_VER%.*}.*" \
     && conda clean -afy
