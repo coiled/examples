@@ -1,13 +1,16 @@
 name: pytorch
 channels:
   - pytorch
+  - nvidia
   - conda-forge
-  - defaults
 dependencies:
-  - python==3.11
-  - dask==2023.5.1
+  - python=3.10.0
+  - dask
   - coiled
   - ipykernel
+  - ipython
+  - dask-labextension
+  - jupyterlab
   - optuna
   - pytorch
   - torchvision
