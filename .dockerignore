@@ -1,0 +1,8 @@
+.dockerignore
+.git
+.github
+.gitignore
+.ipynb_checkpoints
+.pre-commit-config.yaml
+.devcontainer
+Dockerfile
