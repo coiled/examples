@@ -8,11 +8,13 @@ on:
     paths:
       - pytorch.yml
       - .github/workflows/docker.yml
+      - Dockerfile
   pull_request:
     # This workflow takes a while, let's only run it when we touch relevant files
     paths:
       - pytorch.yml
       - .github/workflows/docker.yml
+      - Dockerfile
 
 jobs:
   docker:
