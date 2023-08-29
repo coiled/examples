@@ -6,6 +6,7 @@ FROM rapidsai/mambaforge-cuda:cuda${CUDA_VER}-base-${LINUX_VER}-py${PYTHON_VER} 
 ARG CUDA_VER
 ARG PYTHON_VER
 
+WORKDIR /home
 COPY pytorch.yml pytorch.yml
 RUN mamba env update -n base --file pytorch.yml \
     && mamba uninstall -y pytorch torchvision \
@@ -15,4 +16,5 @@ RUN mamba env update -n base --file pytorch.yml \
         pytorch \
         torchvision \
         "pytorch-cuda=${CUDA_VER%.*}.*" \
-    && conda clean -afy
+    && conda clean -afy \
+    && rm pytorch.yml
