@@ -4,21 +4,19 @@ on:
   push:
     branches:
       - main
-    # This workflow takes a while, let's only run it when we touch relevant files
-    paths:
-      - pytorch.yml
-      - .github/workflows/docker.yml
-      - Dockerfile
   pull_request:
-    # This workflow takes a while, let's only run it when we touch relevant files
-    paths:
-      - pytorch.yml
-      - .github/workflows/docker.yml
-      - Dockerfile
 
 jobs:
   docker:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - repo: "coiled/gpu"
+            target: "base"
+          - repo: "coiled/gpu-examples"
+            target: "examples"
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -32,9 +30,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build ${{ matrix.repo }} image and push
         uses: docker/build-push-action@v4
         with:
           push: ${{ github.repository == 'coiled/examples' && github.event_name == 'push'  && github.ref == 'refs/heads/main'}}
           platforms: linux/amd64
-          tags: coiled/gpu:latest,coiled/gpu:${{ github.sha }}
+          target: ${{ matrix.target }}
+          tags: ${{ matrix.repo }}:latest,${{ matrix.repo }}:${{ github.sha }}

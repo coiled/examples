@@ -18,3 +18,7 @@ RUN mamba env update -n base --file pytorch.yml \
         "pytorch-cuda=${CUDA_VER%.*}.*" \
     && conda clean -afy \
     && rm pytorch.yml
+
+
+FROM base as examples
+COPY . .
