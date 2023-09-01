@@ -12,7 +12,7 @@ import xarray as xr
 
 
 # optionally run with coiled run
-# coiled run --region us-east-1 --vm-type m6g.xlarge python nwm-aws.py
+# coiled run --region us-east-1 --vm-type m6g.xlarge python national-water-model/xarray-water-model.py
 
 cluster = coiled.Cluster(
     name="nwm-1979-2020",
@@ -24,7 +24,6 @@ cluster = coiled.Cluster(
 )
 
 client = cluster.get_client()
-client.restart()
 cluster.adapt(minimum=10, maximum=200)
 
 ds = xr.open_zarr(
