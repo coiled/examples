@@ -21,4 +21,4 @@ dependencies:
   - h5netcdf
   - pre-commit
   - pip:
-    - git+https://github.com/jrbourbeau/earthaccess.git@include-store
+    - git+https://github.com/nsidc/earthaccess.git@main
