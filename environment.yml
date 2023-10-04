@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python==3.10
+  - python=3.10
   - dask
   - dask-ml
   - coiled
@@ -20,5 +20,4 @@ dependencies:
   - zarr
   - h5netcdf
   - pre-commit
-  - pip:
-    - git+https://github.com/nsidc/earthaccess.git@main
+  - earthaccess
