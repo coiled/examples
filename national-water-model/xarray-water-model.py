@@ -16,35 +16,29 @@ import xarray as xr
 
 cluster = coiled.Cluster(
     name="nwm-1979-2020",
-    region="us-east-1", # close to data
+    region="us-east-1",  # close to data
     n_workers=10,
-    scheduler_vm_types="r7g.xlarge", # ARM instance
+    scheduler_vm_types="r7g.xlarge",  # ARM instance
     worker_vm_types="r7g.2xlarge",
-    compute_purchase_option="spot_with_fallback" # use spot, replace with on-demand
+    spot_policy="spot_with_fallback",  # use spot, replace with on-demand
 )
 
 client = cluster.get_client()
 cluster.adapt(minimum=10, maximum=200)
 
 ds = xr.open_zarr(
-    fsspec.get_mapper(
-        "s3://noaa-nwm-retrospective-2-1-zarr-pds/rtout.zarr",
-        anon=True
-    ),
+    fsspec.get_mapper("s3://noaa-nwm-retrospective-2-1-zarr-pds/rtout.zarr", anon=True),
     consolidated=True,
-    chunks={"time": 896, "x": 350, "y": 350}
+    chunks={"time": 896, "x": 350, "y": 350},
 )
 
-subset = ds.zwattablrt.sel(
-    time=slice("1979-02-01", "2020-12-31")
-)
+subset = ds.zwattablrt.sel(time=slice("1979-02-01", "2020-12-31"))
 
 fs = fsspec.filesystem("s3", requester_pays=True)
 
 with dask.annotate(retries=3):
     counties = rioxarray.open_rasterio(
-        fs.open("s3://nwm-250m-us-counties/Counties_on_250m_grid.tif"),
-        chunks="auto"
+        fs.open("s3://nwm-250m-us-counties/Counties_on_250m_grid.tif"), chunks="auto"
     ).squeeze()
 
 # remove any small floating point error in coordinate locations
