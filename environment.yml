@@ -1,4 +1,4 @@
-name: coiled
+name: coiled-examples
 channels:
   - conda-forge
   - defaults
