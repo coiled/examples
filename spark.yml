@@ -1,0 +1,16 @@
+name: spark
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - dask
+  - coiled
+  - ipykernel
+  - pyspark==3.4.1
+  - pyarrow
+  - grpcio
+  - grpcio-status
+  - openjdk~=11.0
+  - protobuf
+  - jupyterlab
+  - s3fs
