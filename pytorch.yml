@@ -2,7 +2,7 @@ name: pytorch
 channels:
   - conda-forge
 dependencies:
-  - python=3.10
+  - python=3.11
   - dask
   - coiled
   - ipykernel
@@ -12,7 +12,6 @@ dependencies:
   - optuna
   - pytorch
   - torchvision
-  - pynvml
   - matplotlib
   - pip
   - optuna-integration
