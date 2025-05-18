@@ -10,14 +10,6 @@ WORKDIR /home
 COPY pytorch.yml pytorch.yml
 RUN mamba env update -n base --file pytorch.yml \
     && conda clean -afy \
-    && mamba uninstall -y pytorch torchvision \
-    && mamba install -y -n base -c pytorch -c nvidia -c conda-forge \
-        "cudatoolkit=${CUDA_VER%.*}.*" \
-        "cuda-version=${CUDA_VER%.*}.*" \
-        pytorch \
-        torchvision \
-        "pytorch-cuda=${CUDA_VER%.*}.*" \
-    && conda clean -afy \
     && rm pytorch.yml
 
 
