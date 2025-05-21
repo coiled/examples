@@ -15,7 +15,7 @@ RUN mamba env update -n base --file pytorch.yml \
         "cudatoolkit=${CUDA_VER%.*}.*" \
         "cuda-version=${CUDA_VER%.*}.*" \
         pytorch-gpu \
-        torchvision
+        torchvision \
     && conda clean -afy \
     && rm pytorch.yml
 
