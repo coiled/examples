@@ -1,12 +1,10 @@
 name: coiled-examples
 channels:
   - conda-forge
-  - defaults
+  - nodefaults
 dependencies:
   - python=3.10
-  # TODO: Undo version restriction once https://github.com/dmlc/xgboost/issues/11461
-  # has been resolved and released
-  - dask<2025.4.0
+  - dask
   - dask-ml
   - coiled
   - pyarrow
